@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Video Uploader</title>
+</head>
+<body>
+    <h1>Upload Video to Google Drive</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+    <progress id="progressBar" value="0" max="100"></progress>
+    
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        function uploadFile() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file.");
+                return;
+            }
+
+            var accessToken = 'AIzaSyCfleZMSGBGdj75C-d_6kCbMXE21Ek6Od4'; // Replace with your Google Drive access token
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=media', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    var percentComplete = (e.loaded / e.total) * 100;
+                    document.getElementById('progressBar').value = percentComplete;
+                }
+            };
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    alert('File uploaded successfully!');
+                    document.getElementById('progressBar').value = 0;
+                } else {
+                    alert('Error uploading file. Status: ' + xhr.status);
+                }
+            };
+            xhr.onerror = function () {
+                alert('Network error while uploading file.');
+            };
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
